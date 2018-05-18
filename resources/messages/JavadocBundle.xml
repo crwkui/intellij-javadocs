@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+    <entry key="com.htsc.intellijjavadoc.defaultVersions.text">默认版本</entry>
+    <entry key="com.htsc.intellijjavadoc.action.Remove.text">是否要移除所有javadoc？</entry>
+    <entry key="com.htsc.intellijjavadoc.action.Remove.title">移除所有javadoc</entry>
+    <entry key="com.htsc.intellijjavadoc.settings.ConfigPanel.Mode">模式</entry>
+    <entry key="com.htsc.intellijjavadoc.settings.ConfigPanel.Level">级别</entry>
+    <entry key="com.htsc.intellijjavadoc.settings.ConfigPanel.Visibility">可见性</entry>
+    <entry key="com.htsc.intellijjavadoc.settings.ConfigPanel.Other">其他</entry>
+    <entry key="com.htsc.intellijjavadoc.settings.ConfigPanel.Templates">模板</entry>
+    <entry key="com.htsc.intellijjavadoc.settings.ConfigPanel.General">一般</entry>
+    <entry key="com.htsc.intellijjavadoc.settings.ConfigPanel.Mode.Keep">保留原有javadoc</entry>
+    <entry key="com.htsc.intellijjavadoc.settings.ConfigPanel.Mode.Relpace">更新原有javadoc</entry>
+    <entry key="com.htsc.intellijjavadoc.settings.ConfigPanel.Mode.Update">替换原有javadoc</entry>
+    <entry key="com.htsc.intellijjavadoc.settings.ConfigPanel.Locale"><![CDATA[语言]]></entry>
+    <entry key="com.htsc.intellijjavadoc.settings.ConfigPanel.OverriddenMethods">是否注释Overridden方法</entry>
+    <entry key="com.htsc.intellijjavadoc.settings.ConfigPanel.SplittedClassMethods">类名是否按单词拆分</entry>
+</properties>

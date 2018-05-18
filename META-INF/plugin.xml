@@ -1,7 +1,7 @@
 <idea-plugin version="2" url="http://setial.github.com/intellij-javadocs">
     <id>com.github.setial</id>
     <name>JavaDoc</name>
-    <version>3.1.0</version>
+    <version>3.1.1</version>
     <vendor email="s.timofiychuk@gmail.com" url="http://setial.github.com/intellij-javadocs">
         Sergey Timofiychuk
     </vendor>
@@ -92,7 +92,7 @@
 
     <!-- please see http://confluence.jetbrains.net/display/IDEADEV/Build+Number+Ranges for description -->
     <!-- supports only intellij idea 15 -->
-    <idea-version since-build="142.4783"/>
+    <idea-version since-build="171"/>
 
     <!-- please see http://confluence.jetbrains.net/display/IDEADEV/Plugin+Compatibility+with+IntelliJ+Platform+Products
          on how to target different products -->
@@ -151,7 +151,7 @@
                     description="Remove javadocs for all elements in the current java file.">
                 <keyboard-shortcut keymap="$default" first-keystroke="shift ctrl alt Z"/>
             </action>
-            <separator/>
+            <separator/>JavaDocConfigurationImpl
             <add-to-group group-id="GenerateGroup" anchor="last"/>
         </group>
         <group id="com.github.setial.action.file_tree" text="_JavaDocs" description="Generate JavaDocs" popup="true">
@@ -171,6 +171,7 @@
     </actions>
 
     <extensions defaultExtensionNs="com.intellij">
+        <applicationConfigurable instance="com.github.setial.intellijjavadocs.configuration.impl.JavaDocConfigurationImpl"/>
         <!-- Add your extensions here -->
     </extensions>
 </idea-plugin>

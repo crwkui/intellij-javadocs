@@ -1,5 +1,7 @@
 package com.github.setial.intellijjavadocs.action;
 
+import com.github.setial.intellijjavadocs.i18n.JavadocBundle;
+import com.github.setial.intellijjavadocs.model.ActionType;
 import com.intellij.ide.highlighter.JavaFileType;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.CommonDataKeys;
@@ -61,6 +63,15 @@ public class JavaDocsGenerateAction extends JavaDocGenerateAction implements Dum
         final Editor editor = CommonDataKeys.EDITOR.getData(dataContext);
         final VirtualFile[] files = CommonDataKeys.VIRTUAL_FILE_ARRAY.getData(dataContext);
 
+        if(type == ActionType.Remove){
+            JavadocBundle javadocBundle = new JavadocBundle();
+            String msg = javadocBundle.getMessage("com.htsc.intellijjavadoc.action.Remove.text");
+            String title = javadocBundle.getMessage("com.htsc.intellijjavadoc.action.Remove.title");
+            int result = Messages.showOkCancelDialog(msg, title, Messages.getQuestionIcon());
+            if(result != 0){
+                return;
+            }
+        }
         if (editor != null && file != null) {
             processFile(file);
         } else if (project != null && files != null) {

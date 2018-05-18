@@ -35,8 +35,8 @@ import java.util.Set;
         name = JavaDocConfiguration.COMPONENT_NAME,
         storages = {
                 @Storage(
-                        id = "other",
-                        file = StoragePathMacros.APP_CONFIG + "/intellij-javadocs.xml"
+//                        value = "other",
+                        file = "./intellij-javadocs.xml"
                 )
         }
 )
@@ -45,10 +45,10 @@ public class JavaDocConfigurationImpl implements JavaDocConfiguration, Configura
 
     private static final Logger LOGGER = Logger.getInstance(JavaDocConfigurationImpl.class);
 
-    private JavaDocSettings settings;
+    private static JavaDocSettings settings;
     private ConfigPanel configPanel;
     private DocTemplateManager templateManager;
-    private boolean loadedStoredConfig = false;
+    private static boolean loadedStoredConfig = false;
 
     /**
      * Instantiates a new Java doc configuration object.
@@ -164,6 +164,7 @@ public class JavaDocConfigurationImpl implements JavaDocConfiguration, Configura
             settings.getGeneralSettings().setMode(Mode.UPDATE);
             settings.getGeneralSettings().setLevels(levels);
             settings.getGeneralSettings().setVisibilities(visibilities);
+            settings.getGeneralSettings().setVersions("0.0.1");
 
             settings.getTemplateSettings().setClassTemplates(templateManager.getClassTemplates());
             settings.getTemplateSettings().setConstructorTemplates(templateManager.getConstructorTemplates());

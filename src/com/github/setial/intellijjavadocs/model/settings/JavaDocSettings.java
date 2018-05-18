@@ -30,6 +30,8 @@ public class JavaDocSettings implements Serializable {
     private static final String FIELDS = "FIELDS";
     private static final String METHOD = "METHOD";
     private static final String METHODS = "METHODS";
+    private static final String VERSIONS = "VERSIONS";
+    private static final String LOCALE = "LOCALE";
 
     private GeneralSettings generalSettings = new GeneralSettings();
     private TemplateSettings templateSettings = new TemplateSettings();
@@ -53,6 +55,8 @@ public class JavaDocSettings implements Serializable {
             generalSettings.setSplittedClassName(Boolean.parseBoolean(general.getChild(SPLITTED_CLASS_NAME).getValue()));
             generalSettings.setLevels(XmlUtils.getValues(general, LEVELS, LEVEL, Level.class));
             generalSettings.setVisibilities(XmlUtils.getValues(general, VISIBILITIES, VISIBILITY, Visibility.class));
+            generalSettings.setVersions(general.getChild(VERSIONS).getValue());
+            generalSettings.setLocale(general.getChild(LOCALE).getValue());
         }
         Element templates = element.getChild(TEMPLATES);
         if (templates != null) {
@@ -76,6 +80,8 @@ public class JavaDocSettings implements Serializable {
         general.addContent(XmlUtils.getElement(SPLITTED_CLASS_NAME, String.valueOf(generalSettings.isSplittedClassName())));
         general.addContent(XmlUtils.getElement(LEVELS, LEVEL, generalSettings.getLevels()));
         general.addContent(XmlUtils.getElement(VISIBILITIES, VISIBILITY, generalSettings.getVisibilities()));
+        general.addContent(XmlUtils.getElement(VERSIONS, generalSettings.getVersions()));
+        general.addContent(XmlUtils.getElement(LOCALE, generalSettings.getLocale()));
 
         Element templates = new Element(TEMPLATES);
         root.addContent(templates);

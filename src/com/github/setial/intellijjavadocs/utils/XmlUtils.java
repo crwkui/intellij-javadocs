@@ -3,6 +3,7 @@ package com.github.setial.intellijjavadocs.utils;
 import org.jdom.Element;
 
 import java.io.IOException;
+import java.net.URLDecoder;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -35,7 +36,8 @@ public class XmlUtils {
      * @throws IOException the iO exception
      */
     public static String trimElementContent(Element element) throws IOException {
-        return element.getTextTrim();
+        String content =  element.getTextTrim();
+        return content;
     }
 
     /**

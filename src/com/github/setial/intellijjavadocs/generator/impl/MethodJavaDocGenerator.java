@@ -5,18 +5,18 @@ import com.github.setial.intellijjavadocs.model.settings.JavaDocSettings;
 import com.github.setial.intellijjavadocs.model.settings.Level;
 import com.github.setial.intellijjavadocs.utils.JavaDocUtils;
 import com.intellij.openapi.project.Project;
-import com.intellij.psi.PsiJavaCodeReferenceElement;
-import com.intellij.psi.PsiMethod;
-import com.intellij.psi.PsiParameter;
-import com.intellij.psi.PsiType;
-import com.intellij.psi.PsiTypeElement;
+import com.intellij.psi.*;
+import com.intellij.psi.util.PsiTreeUtil;
 import freemarker.template.Template;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * The type Method java doc generator.
@@ -62,7 +62,24 @@ public class MethodJavaDocGenerator extends AbstractJavaDocGenerator<PsiMethod> 
         }
         params.put("paramNames", paramNames);
         params.put("exceptionNames", exceptionNames);
-        params.put("fieldName", getDocTemplateProcessor().buildFieldDescription(element.getName()));
+        String fieldName = getDocTemplateProcessor().buildFieldDescription(element.getName());
+        params.put("fieldName", fieldName);
+        List<PsiField> fields = PsiTreeUtil.getChildrenOfTypeAsList(element.getParent(), PsiField.class);
+        List<PsiField> target = fields.stream().filter(f -> f.getName().equals(fieldName)).collect(Collectors.toList());
+        params.put("elementDesc", params.get("partName"));
+        if(target.size() ==  1){
+            PsiField field = target.get(0);
+            params.put("field", field);
+            if(field.getDocComment() != null){
+                String comment = JavaDocUtils.findDocDescriptionToSingleLine(field.getDocComment());
+                params.put("fieldCommnet", comment);
+                if(StringUtils.isNotEmpty(comment)){
+                    params.put("elementDesc", comment);
+                }else{
+
+                }
+            }
+        }
 
         String javaDocText = getDocTemplateProcessor().merge(template, params);
         return JavaDocUtils.toJavaDoc(javaDocText, getPsiElementFactory());

@@ -5,6 +5,7 @@ import com.github.setial.intellijjavadocs.generator.JavaDocGenerator;
 import com.github.setial.intellijjavadocs.generator.impl.ClassJavaDocGenerator;
 import com.github.setial.intellijjavadocs.generator.impl.FieldJavaDocGenerator;
 import com.github.setial.intellijjavadocs.generator.impl.MethodJavaDocGenerator;
+import com.github.setial.intellijjavadocs.model.ActionType;
 import com.github.setial.intellijjavadocs.operation.JavaDocWriter;
 import com.intellij.codeInsight.CodeInsightActionHandler;
 import com.intellij.openapi.actionSystem.AnActionEvent;
@@ -40,6 +41,8 @@ public class JavaDocGenerateAction extends BaseAction {
     private static final Logger LOGGER = Logger.getInstance(JavaDocGenerateAction.class);
 
     private JavaDocWriter writer;
+
+    protected ActionType type;
 
     /**
      * Instantiates a new Java doc generate action.

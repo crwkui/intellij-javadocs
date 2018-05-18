@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+    <entry key="com.htsc.intellijjavadoc.defaultVersions.text">Default version:</entry>
+    <entry key="com.htsc.intellijjavadoc.action.Remove.text">Do you want to remove all javadoc?</entry>
+    <entry key="com.htsc.intellijjavadoc.action.Remove.title">Remove javadocsc</entry>
+    <entry key="com.htsc.intellijjavadoc.settings.ConfigPanel.Mode">Mode</entry>
+    <entry key="com.htsc.intellijjavadoc.settings.ConfigPanel.Level">Level</entry>
+    <entry key="com.htsc.intellijjavadoc.settings.ConfigPanel.Visibility">Visibility</entry>
+    <entry key="com.htsc.intellijjavadoc.settings.ConfigPanel.Other">Other</entry>
+    <entry key="com.htsc.intellijjavadoc.settings.ConfigPanel.Templates">Templates</entry>
+    <entry key="com.htsc.intellijjavadoc.settings.ConfigPanel.General">General</entry>
+    <entry key="com.htsc.intellijjavadoc.settings.ConfigPanel.Mode.Keep">Keep old javadoc</entry>
+    <entry key="com.htsc.intellijjavadoc.settings.ConfigPanel.Mode.Relpace">Update old javadoc</entry>
+    <entry key="com.htsc.intellijjavadoc.settings.ConfigPanel.Mode.Update">Replace old javadoc</entry>
+    <entry key="com.htsc.intellijjavadoc.settings.ConfigPanel.Locale">Language: </entry>
+    <entry key="com.htsc.intellijjavadoc.settings.ConfigPanel.OverriddenMethods">Comment overridden methods</entry>
+    <entry key="com.htsc.intellijjavadoc.settings.ConfigPanel.SplittedClassMethods">Generate splitted class name</entry>
+</properties>

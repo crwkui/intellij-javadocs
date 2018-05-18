@@ -5,14 +5,17 @@
 
         <template regexp="^.*(public|protected|private)*.+interface\s+\w+.*">
 /**\n
- * The interface ${name}.\n
+ * 接口${name}.\n
+ * \n
+ * @author ${user} \n
+ * @version ${versions} \n
     &lt;#if element.typeParameters?has_content&gt;
         * \n
     &lt;/#if&gt;
 
     &lt;#list element.typeParameters as typeParameter&gt;
 
-        * @param &lt;${typeParameter.name}&gt; the type parameter\n
+        * @param &lt;${typeParameter.name}&gt; type parameter\n
     &lt;/#list&gt;
 
  */
@@ -20,20 +23,26 @@
 
         <template regexp="^.*(public|protected|private)*.+enum\s+\w+.*">
 /**\n
- * The enum ${name}.\n
+ * 枚举 ${name}.\n
+ * \n
+ * @author ${user} \n
+ * @version ${versions} \n
  */
         </template>
 
         <template regexp="^.*(public|protected|private)*.+class\s+\w+.*">
 /**\n
- * The type ${name}.\n
+ * 类${name}.\n
+ * \n
+ * @author ${user} \n
+ * @version 0.0.1 \n
     &lt;#if element.typeParameters?has_content&gt;
         * \n
     &lt;/#if&gt;
 
     &lt;#list element.typeParameters as typeParameter&gt;
 
-        * @param &lt;${typeParameter.name}&gt; the type parameter\n
+        * @param &lt;${typeParameter.name}&gt; type parameter\n
     &lt;/#list&gt;
 
  */
@@ -41,7 +50,10 @@
 
         <template regexp=".+">
 /**\n
- * The type ${name}.\n
+ * 类${name}.\n
+ * \n
+ * @author ${user} \n
+ * @version ${versions} \n
  */
         </template>
 
@@ -63,7 +75,7 @@
         * The constant ${element.getName()}.\n
     &lt;#else&gt;
 
-        * The ${name}.\n
+        * ${name}.\n
     &lt;/#if&gt;
  */
         </template>
@@ -75,7 +87,7 @@
         *${name} ${typeName}.\n
     &lt;#else&gt;
 
-        * The ${name}.\n
+        * ${name}.\n
     &lt;/#if&gt;
 */
         </template>
@@ -85,16 +97,16 @@
 
     <method>
 
-        <template regexp="^.*(public|protected|private)*\s*.*(\w(\s*&lt;.+&gt;)*)+\s+get\w+\s*\(.*\).+">
+        <template regexp="^.*(public|protected|private)*\s*.*(\w(\s*&lt;.+&gt;)*)+\s+(get|is)\w+\s*\(.*\).+">
 /**\n
- * Gets ${partName}.\n
+ * 获取${elementDesc}.\n
      &lt;#if element.typeParameters?has_content&gt;
          * \n
      &lt;/#if&gt;
 
      &lt;#list element.typeParameters as typeParameter&gt;
 
-         * @param &lt;${typeParameter.name}&gt; the type parameter\n
+         * @param &lt;${typeParameter.name}&gt; 泛型\n
      &lt;/#list&gt;
 
      &lt;#if element.parameterList.parameters?has_content&gt;
@@ -104,13 +116,13 @@
 
      &lt;#list element.parameterList.parameters as parameter&gt;
 
-         * @param ${parameter.name} the ${paramNames[parameter.name]}\n
+         * @param ${parameter.name} ${paramNames[parameter.name]}\n
      &lt;/#list&gt;
 
      &lt;#if isNotVoid&gt;
 
          *\n
-         * @return the ${partName}\n
+         * @return ${element.returnType.presentableText} 返回${elementDesc}\n
      &lt;/#if&gt;
 
      &lt;#if element.throwsList.referenceElements?has_content&gt;
@@ -120,7 +132,7 @@
 
      &lt;#list element.throwsList.referenceElements as exception&gt;
 
-         * @throws ${exception.referenceName} the ${exceptionNames[exception.referenceName]}\n
+         * @throws ${exception.referenceName} 异常抛出${exceptionNames[exception.referenceName]}\n
      &lt;/#list&gt;
 
  */
@@ -128,14 +140,14 @@
 
         <template regexp="^.*(public|protected|private)*\s*.*(void|\w(\s*&lt;.+&gt;)*)+\s+set\w+\s*\(.*\).+">
 /**\n
- * Sets ${partName}.\n
+ * 设置${elementDesc}.\n
      &lt;#if element.typeParameters?has_content&gt;
          * \n
      &lt;/#if&gt;
 
      &lt;#list element.typeParameters as typeParameter&gt;
 
-         * @param &lt;${typeParameter.name}&gt; the type parameter\n
+         * @param &lt;${typeParameter.name}&gt; type parameter\n
      &lt;/#list&gt;
 
      &lt;#if element.parameterList.parameters?has_content&gt;
@@ -144,14 +156,17 @@
      &lt;/#if&gt;
 
      &lt;#list element.parameterList.parameters as parameter&gt;
-
-         * @param ${parameter.name} the ${paramNames[parameter.name]}\n
+            &lt;#if parameter.name == fieldName&gt;
+         * @param ${parameter.name} ${elementDesc}\n
+            &lt;#else&gt;
+         * @param ${parameter.name} ${paramNames[parameter.name]}\n
+            &lt;/#if&gt;
      &lt;/#list&gt;
 
      &lt;#if isNotVoid&gt;
 
          *\n
-         * @return the ${partName}\n
+         * @return ${element.returnType.presentableText} ${partName}\n
      &lt;/#if&gt;
 
      &lt;#if element.throwsList.referenceElements?has_content&gt;
@@ -161,9 +176,8 @@
 
      &lt;#list element.throwsList.referenceElements as exception&gt;
 
-         * @throws ${exception.referenceName} the ${exceptionNames[exception.referenceName]}\n
+         * @throws ${exception.referenceName} 异常抛出${exceptionNames[exception.referenceName]}\n
      &lt;/#list&gt;
-
  */
         </template>
 
@@ -184,7 +198,7 @@
 
      &lt;#list element.throwsList.referenceElements as exception&gt;
 
-         * @throws ${exception.referenceName} the ${exceptionNames[exception.referenceName]}\n
+         * @throws ${exception.referenceName} 异常抛出${exceptionNames[exception.referenceName]}\n
      &lt;/#list&gt;
 
  */
@@ -199,7 +213,7 @@
 
      &lt;#list element.typeParameters as typeParameter&gt;
 
-         * @param &lt;${typeParameter.name}&gt; the type parameter\n
+         * @param &lt;${typeParameter.name}&gt; type parameter\n
      &lt;/#list&gt;
 
      &lt;#if element.parameterList.parameters?has_content&gt;
@@ -209,13 +223,13 @@
 
      &lt;#list element.parameterList.parameters as parameter&gt;
 
-         * @param ${parameter.name} the ${paramNames[parameter.name]}\n
+         * @param ${parameter.name} ${paramNames[parameter.name]}\n
      &lt;/#list&gt;
 
      &lt;#if isNotVoid&gt;
 
          *\n
-         * @return the ${return}\n
+         * @return ${element.returnType.presentableText} ${return}\n
      &lt;/#if&gt;
 
      &lt;#if element.throwsList.referenceElements?has_content&gt;
@@ -225,7 +239,7 @@
 
      &lt;#list element.throwsList.referenceElements as exception&gt;
 
-         * @throws ${exception.referenceName} the ${exceptionNames[exception.referenceName]}\n
+         * @throws ${exception.referenceName} 异常抛出${exceptionNames[exception.referenceName]}\n
      &lt;/#list&gt;
 
  */
@@ -246,7 +260,7 @@
 
      &lt;#list element.parameterList.parameters as parameter&gt;
 
-         * @param ${parameter.name} the ${paramNames[parameter.name]}\n
+         * @param ${parameter.name} ${paramNames[parameter.name]}\n
      &lt;/#list&gt;
 
      &lt;#if element.throwsList.referenceElements?has_content&gt;
@@ -256,7 +270,7 @@
 
      &lt;#list element.throwsList.referenceElements as exception&gt;
 
-         * @throws ${exception.referenceName} the ${exceptionNames[exception.referenceName]}\n
+         * @throws ${exception.referenceName} 异常抛出${exceptionNames[exception.referenceName]}\n
      &lt;/#list&gt;
 
  */

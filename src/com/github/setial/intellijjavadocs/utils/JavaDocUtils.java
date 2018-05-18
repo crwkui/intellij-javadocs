@@ -296,4 +296,15 @@ public class JavaDocUtils {
     private JavaDocUtils() {
     }
 
+    public static String findDocDescriptionToSingleLine(PsiDocComment docComment) {
+        StringBuilder sb = new StringBuilder();
+        List<String> lines = findDocDescription(docComment);
+        for (String line : lines) {
+            String l = line.trim().replaceAll("\n", "");
+            if(StringUtils.isNotEmpty(l)){
+                sb.append(l);
+            }
+        }
+        return sb.toString();
+    }
 }

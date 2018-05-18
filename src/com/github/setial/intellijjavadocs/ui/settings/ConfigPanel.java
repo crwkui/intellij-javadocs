@@ -1,5 +1,6 @@
 package com.github.setial.intellijjavadocs.ui.settings;
 
+import com.github.setial.intellijjavadocs.i18n.JavadocBundle;
 import com.github.setial.intellijjavadocs.model.settings.JavaDocSettings;
 import com.github.setial.intellijjavadocs.model.settings.Level;
 import com.github.setial.intellijjavadocs.model.settings.Mode;
@@ -10,17 +11,17 @@ import com.intellij.ui.ToolbarDecorator;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
+import org.apache.commons.lang3.StringUtils;
 
-import javax.swing.BorderFactory;
-import javax.swing.ButtonGroup;
-import javax.swing.JCheckBox;
-import javax.swing.JComponent;
-import javax.swing.JPanel;
-import javax.swing.JRadioButton;
-import javax.swing.JTabbedPane;
+import javax.swing.*;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Insets;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -32,6 +33,7 @@ import java.util.Map.Entry;
 public class ConfigPanel extends JPanel {
 
     private JavaDocSettings settings;
+    private JavadocBundle bundle = new JavadocBundle();
 
     private JTabbedPane tabbedPane;
     private JPanel panel;
@@ -52,6 +54,10 @@ public class ConfigPanel extends JPanel {
     private JPanel generalLevelPanel;
     private JPanel generalVisibilityPanel;
     private JPanel generalOtherPanel;
+    private JTextField generalOtherDefaultVersions;
+    private JLabel generalOtherDefaultVersionsLabel;
+    private JComboBox generalOtherLocale;
+    private JLabel generalOtherLocaleLabel;
     private TemplatesTable classTemplatesTable;
     private TemplatesTable constructorTemplatesTable;
     private TemplatesTable methodTemplatesTable;
@@ -68,6 +74,8 @@ public class ConfigPanel extends JPanel {
         add(panel, BorderLayout.CENTER);
         setupBorders();
         setupTemplatesPanel();
+        setupTexts();
+        setupLocale();
     }
 
     /**
@@ -88,16 +96,20 @@ public class ConfigPanel extends JPanel {
         result = result || isCheckboxModified(generalLevelTypeCheckbox, settings.getGeneralSettings().getLevels().contains(Level.TYPE));
         result = result || isCheckboxModified(generalLevelMethodCheckbox, settings.getGeneralSettings().getLevels().contains(Level.METHOD));
         result = result || isCheckboxModified(generalLevelFieldCheckbox, settings.getGeneralSettings().getLevels().contains(Level.FIELD));
-        result = result || isCheckboxModified(
-                generalVisibilityPublicCheckbox, settings.getGeneralSettings().getVisibilities().contains(Visibility.PUBLIC));
-        result = result || isCheckboxModified(
-                generalVisibilityProtectedCheckbox, settings.getGeneralSettings().getVisibilities().contains(Visibility.PROTECTED));
-        result = result || isCheckboxModified(
-                generalVisibilityDefaultCheckbox, settings.getGeneralSettings().getVisibilities().contains(Visibility.DEFAULT));
-        result = result || isCheckboxModified(
-                generalVisibilityPrivateCheckbox, settings.getGeneralSettings().getVisibilities().contains(Visibility.PRIVATE));
+        result = result || isCheckboxModified(generalVisibilityPublicCheckbox,
+                settings.getGeneralSettings().getVisibilities().contains(Visibility.PUBLIC));
+        result = result || isCheckboxModified(generalVisibilityProtectedCheckbox,
+                settings.getGeneralSettings().getVisibilities().contains(Visibility.PROTECTED));
+        result = result || isCheckboxModified(generalVisibilityDefaultCheckbox,
+                settings.getGeneralSettings().getVisibilities().contains(Visibility.DEFAULT));
+        result = result || isCheckboxModified(generalVisibilityPrivateCheckbox,
+                settings.getGeneralSettings().getVisibilities().contains(Visibility.PRIVATE));
         result = result || isCheckboxModified(generalOtherOverriddenMethodsCheckbox, settings.getGeneralSettings().isOverriddenMethods());
         result = result || isCheckboxModified(generalOtherSplittedClassName, settings.getGeneralSettings().isSplittedClassName());
+        if (StringUtils.isNotEmpty(generalOtherDefaultVersions.getText())) {
+            result = result || !settings.getGeneralSettings().getVisibilities().equals(generalOtherDefaultVersions.getText());
+        }
+        result = result || !settings.getGeneralSettings().getLocale().equals(getLocaleStr(generalOtherLocale.getSelectedIndex()));
 
         // check if templates settings are modified
         result = result || checkIfTableContentModified(classTemplatesTable.getSettings(),
@@ -152,6 +164,8 @@ public class ConfigPanel extends JPanel {
 
         settings.getGeneralSettings().setOverriddenMethods(generalOtherOverriddenMethodsCheckbox.isSelected());
         settings.getGeneralSettings().setSplittedClassName(generalOtherSplittedClassName.isSelected());
+        settings.getGeneralSettings().setVersions(generalOtherDefaultVersions.getText());
+        settings.getGeneralSettings().setLocale(getLocaleStr(generalOtherLocale.getSelectedIndex()));
 
         // apply templates settings
         settings.getTemplateSettings().setClassTemplates(classTemplatesTable.getSettings());
@@ -207,6 +221,8 @@ public class ConfigPanel extends JPanel {
         }
         generalOtherOverriddenMethodsCheckbox.setSelected(settings.getGeneralSettings().isOverriddenMethods());
         generalOtherSplittedClassName.setSelected(settings.getGeneralSettings().isSplittedClassName());
+        generalOtherDefaultVersions.setText(settings.getGeneralSettings().getVersions());
+        generalOtherLocale.setSelectedIndex(getLocaleIndex(settings.getGeneralSettings().getLocale()));
 
         // reset templates settings
         classTemplatesTable.setSettingsModel(settings.getTemplateSettings().getClassTemplates());
@@ -222,14 +238,11 @@ public class ConfigPanel extends JPanel {
     }
 
     @SuppressWarnings("unchecked")
-    private boolean checkIfTableContentModified(Map<String, String> templatesTableSettings,
-                                                Map<String, String> templatesSettings) {
+    private boolean checkIfTableContentModified(Map<String, String> templatesTableSettings, Map<String, String> templatesSettings) {
         boolean result = false;
 
-        Entry<String, String>[] templatesTableEntries =
-                templatesTableSettings.entrySet().toArray(new Entry[templatesTableSettings.size()]);
-        Entry<String, String>[] templatesEntries =
-                templatesSettings.entrySet().toArray(new Entry[templatesSettings.size()]);
+        Entry<String, String>[] templatesTableEntries = templatesTableSettings.entrySet().toArray(new Entry[templatesTableSettings.size()]);
+        Entry<String, String>[] templatesEntries = templatesSettings.entrySet().toArray(new Entry[templatesSettings.size()]);
         if (templatesEntries.length == templatesTableEntries.length) {
             for (int i = 0; i < templatesEntries.length; i++) {
                 result = result || !templatesEntries[i].getKey().equals(templatesTableEntries[i].getKey());
@@ -246,14 +259,10 @@ public class ConfigPanel extends JPanel {
     }
 
     private void setupBorders() {
-        generalModePanel.setBorder(
-                IdeBorderFactory.createTitledBorder("Mode", false, new Insets(0, 0, 0, 10)));
-        generalLevelPanel.setBorder(
-                IdeBorderFactory.createTitledBorder("Level", false, new Insets(0, 0, 0, 10)));
-        generalVisibilityPanel.setBorder(
-                IdeBorderFactory.createTitledBorder("Visibility", false, new Insets(0, 0, 0, 0)));
-        generalOtherPanel.setBorder(
-                IdeBorderFactory.createTitledBorder("Other", false, new Insets(10, 0, 10, 10)));
+        generalModePanel.setBorder(IdeBorderFactory.createTitledBorder(getText("Mode"), false, new Insets(0, 0, 0, 10)));
+        generalLevelPanel.setBorder(IdeBorderFactory.createTitledBorder(getText("Level"), false, new Insets(0, 0, 0, 10)));
+        generalVisibilityPanel.setBorder(IdeBorderFactory.createTitledBorder(getText("Visibility"), false, new Insets(0, 0, 0, 0)));
+        generalOtherPanel.setBorder(IdeBorderFactory.createTitledBorder(getText("Other"), false, new Insets(10, 0, 10, 10)));
     }
 
     private void setupTemplatesPanel() {
@@ -264,11 +273,10 @@ public class ConfigPanel extends JPanel {
         classPanel.add(classTemplatesLocalPanel, BorderLayout.CENTER);
 
         constructorTemplatesTable = new TemplatesTable(settings.getTemplateSettings().getConstructorTemplates());
-        JPanel constructorTemplatesLocalPanel =
-                ToolbarDecorator.createDecorator(constructorTemplatesTable).createPanel();
+        JPanel constructorTemplatesLocalPanel = ToolbarDecorator.createDecorator(constructorTemplatesTable).createPanel();
         JPanel constructorPanel = new JPanel(new BorderLayout());
-        constructorPanel.setBorder(IdeBorderFactory.createTitledBorder("Constructor level", false,
-                new Insets(0, 0, 10, 0)));
+        constructorPanel
+                .setBorder(IdeBorderFactory.createTitledBorder("Constructor level", false, new Insets(0, 0, 10, 0)));
         constructorPanel.add(constructorTemplatesLocalPanel, BorderLayout.CENTER);
 
         methodTemplatesTable = new TemplatesTable(settings.getTemplateSettings().getMethodTemplates());
@@ -290,11 +298,24 @@ public class ConfigPanel extends JPanel {
         templatesPanel.add(constructorPanel, getConstraints(1, 0));
         templatesPanel.add(methodPanel, getConstraints(2, 0));
         templatesPanel.add(fieldPanel, getConstraints(3, 0));
-        tabbedPane.addTab("Templates", templatesPanel);
+        tabbedPane.addTab(getText("Templates"), templatesPanel);
     }
 
     private GridConstraints getConstraints(int row, int column) {
-        return new GridConstraints(row, column, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false);
+        return new GridConstraints(row, column, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH,
+                GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
+                GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false);
+    }
+
+    private void setupTexts() {
+        generalOtherDefaultVersionsLabel.setText(bundle.getMessage("com.htsc.intellijjavadoc.defaultVersions.text"));
+        generalOtherLocaleLabel.setText(getText("Locale"));
+        generalModeKeepRadioButton.setText(getText("Mode.Keep"));
+        generalModeUpdateRadioButton.setText(getText("Mode.Update"));
+        generalModeReplaceRadioButton.setText(getText("Mode.Relpace"));
+        tabbedPane.setTitleAt(0, getText("General"));
+        generalOtherOverriddenMethodsCheckbox.setText(getText("OverriddenMethods"));
+        generalOtherSplittedClassName.setText(getText("SplittedClassMethods"));
     }
 
     {
@@ -371,7 +392,7 @@ public class ConfigPanel extends JPanel {
         generalVisibilityPrivateCheckbox.setText("Private");
         generalVisibilityPanel.add(generalVisibilityPrivateCheckbox, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         generalOtherPanel = new JPanel();
-        generalOtherPanel.setLayout(new GridLayoutManager(2, 1, new Insets(0, 0, 0, 0), -1, -1));
+        generalOtherPanel.setLayout(new GridLayoutManager(3, 1, new Insets(0, 0, 0, 0), -1, -1));
         generalPanel.add(generalOtherPanel, new GridConstraints(1, 0, 1, 2, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         generalOtherPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEmptyBorder(3, 3, 3, 3), "Other"));
         generalOtherOverriddenMethodsCheckbox = new JCheckBox();
@@ -381,8 +402,23 @@ public class ConfigPanel extends JPanel {
         generalOtherSplittedClassName.setSelected(true);
         generalOtherSplittedClassName.setText("Generate splitted class name");
         generalOtherPanel.add(generalOtherSplittedClassName, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        final JPanel panel1 = new JPanel();
+        panel1.setLayout(new GridLayoutManager(2, 2, new Insets(0, 0, 0, 0), -1, -1));
+        generalOtherPanel.add(panel1, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
+        generalOtherDefaultVersions = new JTextField();
+        panel1.add(generalOtherDefaultVersions, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
+        generalOtherDefaultVersionsLabel = new JLabel();
+        generalOtherDefaultVersionsLabel.setText("Label");
+        panel1.add(generalOtherDefaultVersionsLabel, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        generalOtherLocaleLabel = new JLabel();
+        generalOtherLocaleLabel.setText("Label");
+        panel1.add(generalOtherLocaleLabel, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        generalOtherLocale = new JComboBox();
+        panel1.add(generalOtherLocale, new GridConstraints(1, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final Spacer spacer1 = new Spacer();
         generalPanel.add(spacer1, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, 1, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
+        generalOtherDefaultVersionsLabel.setLabelFor(generalOtherDefaultVersions);
+        generalOtherLocaleLabel.setLabelFor(generalOtherLocale);
         ButtonGroup buttonGroup;
         buttonGroup = new ButtonGroup();
         buttonGroup.add(generalModeKeepRadioButton);
@@ -396,4 +432,43 @@ public class ConfigPanel extends JPanel {
     public JComponent $$$getRootComponent$$$() {
         return panel;
     }
+
+    protected static class LocaleItem {
+        private String name;
+        private String value;
+    }
+
+    private void setupLocale() {
+        List<String> locales = new ArrayList<>();
+        locales.add("中文");
+        locales.add("English");
+        for (String locale : locales) {
+            generalOtherLocale.addItem(locale);
+        }
+        generalOtherLocale.setSelectedIndex(getLocaleIndex(settings.getGeneralSettings().getLocale()));
+    }
+
+    private String getLocaleStr(int selectedIndex) {
+        switch (selectedIndex) {
+            case 0:
+                return Locale.CHINESE.getLanguage();
+            case 1:
+                return Locale.ENGLISH.getLanguage();
+            default:
+                return Locale.CHINESE.getLanguage();
+        }
+    }
+
+    private int getLocaleIndex(String locale) {
+        if (Locale.ENGLISH.getLanguage().equals(settings.getGeneralSettings().getLocale())) {
+            return 1;
+        } else {
+            return 0;
+        }
+    }
+
+    private String getText(String key) {
+        return bundle.getMessage("com.htsc.intellijjavadoc.settings.ConfigPanel." + key);
+    }
+
 }

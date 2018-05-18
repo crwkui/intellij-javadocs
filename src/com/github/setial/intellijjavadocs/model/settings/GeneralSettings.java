@@ -1,5 +1,6 @@
 package com.github.setial.intellijjavadocs.model.settings;
 
+import java.util.Locale;
 import java.util.Set;
 
 /**
@@ -14,6 +15,8 @@ public class GeneralSettings {
     private Set<Visibility> visibilities;
     private boolean overriddenMethods;
     private boolean splittedClassName;
+    private String versions;
+    private String locale;
 
     /**
      * Gets javadoc update mode.
@@ -105,4 +108,40 @@ public class GeneralSettings {
         this.splittedClassName = splittedClassName;
     }
 
+    /**
+     * 获取默认版本
+     * @return
+     */
+    public String getVersions() {
+        return versions;
+    }
+
+    /**
+     * 设置默认版本
+     * @param versions
+     */
+    public void setVersions(String versions) {
+        this.versions = versions;
+    }
+
+    /**
+     * 获取语言设置
+     * @return
+     */
+    public String getLocale() {
+        if(locale == null){
+            String lang = Locale.getDefault().getLanguage();
+            return (!lang .equals(Locale.ENGLISH.getLanguage()) && !lang.equals( Locale.CHINESE.getLanguage())) ?
+                Locale.ENGLISH.getLanguage() : Locale.getDefault().getLanguage();
+        }
+        return locale;
+    }
+
+    /**
+     * 设置语言设置
+     * @param locale
+     */
+    public void setLocale(String locale) {
+        this.locale = locale;
+    }
 }
